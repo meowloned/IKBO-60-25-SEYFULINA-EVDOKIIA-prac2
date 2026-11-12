@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import unittest
+from src.config import parse_args
 
 BASE_ARGS = ["--package", "requests", "--version", "2.32.3"]
 
@@ -16,26 +17,24 @@ def run_program(arguments):
 class ConfigTests(unittest.TestCase):
 
     def test_default_settings(self):
-        result = run_program(BASE_ARGS)
+        args = parse_args(BASE_ARGS)
 
-        expected = [
-            "package=requests", "version=2.32.3",
-            "repository=https://pypi.org/pypi", "test_mode=False",
-            "ascii=False", "max_depth=3", "filter=",
-        ]
-
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.splitlines(), expected)
+        self.assertEqual(args.package, "requests")
+        self.assertEqual(args.version, "2.32.3")
+        self.assertEqual(args.repository, "https://pypi.org/pypi")
+        self.assertFalse(args.test_mode)
+        self.assertFalse(args.ascii)
+        self.assertEqual(args.max_depth, 3)
+        self.assertEqual(args.filter, "")
 
     def test_custom_settings(self):
-        result = run_program(BASE_ARGS + [
+        args = parse_args(BASE_ARGS + [
             "--ascii", "--max-depth", "2", "--filter", "urllib",
         ])
 
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("ascii=True", result.stdout)
-        self.assertIn("max_depth=2", result.stdout)
-        self.assertIn("filter=urllib", result.stdout)
+        self.assertTrue(args.ascii)
+        self.assertEqual(args.max_depth, 2)
+        self.assertEqual(args.filter, "urllib")
 
     def test_invalid_settings(self):
         cases = [
