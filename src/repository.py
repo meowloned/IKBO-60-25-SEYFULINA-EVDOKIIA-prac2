@@ -26,8 +26,13 @@ def extract_dependencies(data):
 
 
 def get_dependencies(repository, package, version):
-    url = f"{repository.rstrip('/')}/{package}/{version}/json"
+    url = f"{repository.rstrip('/')}/{package}"
 
+    if version is not None:
+        url += f"/{version}"
+
+    url += "/json"
+    
     try:
         with urlopen(url, timeout=TIMEOUT) as response:
             data = json.load(response)

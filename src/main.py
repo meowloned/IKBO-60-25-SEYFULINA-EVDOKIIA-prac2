@@ -1,31 +1,26 @@
 import sys
-
 from src.config import parse_args
-from src.repository import get_dependencies
+from src.graph import build_graph
 
 
 def main(argv=None):
     args = parse_args(argv)
 
-    if args.test_mode:
-        print("Чтение тестового файла добавим на этапе 3", file=sys.stderr)
-        return 1
-
     try:
-        dependencies = get_dependencies(
-            args.repository, args.package, args.version
-        )
+        graph = build_graph(args)
     except ValueError as error:
         print(f"Ошибка: {error}", file=sys.stderr)
         return 1
 
-    print(f"Прямые зависимости {args.package}=={args.version}:")
+    if not graph:
+        print("Пакет исключен фильтром")
+        return 0
 
-    if not dependencies:
-        print("Зависимости не указаны")
+    print(f"Граф зависимостей {args.package}=={args.version}:")
 
-    for dependency in dependencies:
-        print(dependency)
+    for package, dependencies in graph.items():
+        text = ", ".join(dependencies) if dependencies else "-"
+        print(f"{package}: {text}")
 
     return 0
 
