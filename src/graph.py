@@ -35,7 +35,7 @@ def load_test_repository(path):
 
 
 def package_dependencies(package, root, args, repository):
-    if args.test_mode:
+    if repository is not None:
         return repository[package]
 
     version = args.version if package == root else None
@@ -79,7 +79,7 @@ def bfs_recursive(level, depth, graph, args, repository, root):
 
 
 def build_graph(args):
-    repository = {}
+    repository = None
     root = normalize_name(args.package)
 
     if args.test_mode:
@@ -94,5 +94,44 @@ def build_graph(args):
 
     graph = {root: []}
     bfs_recursive([root], 0, graph, args, repository, root)
+
+    return graph
+
+
+def reverse_repository(repository):
+    reversed_repository = {}
+
+    for package in repository:
+        reversed_repository[package] = []
+
+    for package, dependencies in repository.items():
+        for dependency in dependencies:
+            if package not in reversed_repository[dependency]:
+                reversed_repository[dependency].append(package)
+
+    return reversed_repository
+
+
+def build_reverse_graph(args):
+    target = args.reverse if args.test_mode else normalize_name(args.reverse)
+
+    if args.filter and args.filter.lower() in target.lower():
+        return {}
+
+    if args.test_mode:
+        repository = load_test_repository(args.repository)
+
+        if args.package not in repository:
+            raise ValueError(f"Пакет {args.package} отсутствует в репозитории")
+    else:
+        repository = build_graph(args)
+
+    if target not in repository:
+        raise ValueError(f"Пакет {target} отсутствует в рассматриваемом графе")
+
+    reversed_repository = reverse_repository(repository)
+    graph = {target: []}
+
+    bfs_recursive([target], 0, graph, args, reversed_repository, target)
 
     return graph

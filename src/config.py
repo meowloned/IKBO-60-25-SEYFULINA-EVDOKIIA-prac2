@@ -50,6 +50,7 @@ def build_parser():
     parser.add_argument("--ascii", action="store_true")
     parser.add_argument("--max-depth", type=depth_value, default=3)
     parser.add_argument("--filter", type=filter_string, default="")
+    parser.add_argument("--reverse", type=package_name)
     return parser
 
 
@@ -68,6 +69,8 @@ def validate_repository(parser, args):
     if args.test_mode:
         if not re.fullmatch(r"[A-Z]+", args.package):
             parser.error("в тестовом режиме имя состоит из букв A-Z")
+        if args.reverse and not re.fullmatch(r"[A-Z]+", args.reverse):
+            parser.error("имя для --reverse должно состоять из букв A-Z")
         if not Path(args.repository).is_file():
             parser.error("файл тестового репозитория не найден")
         return

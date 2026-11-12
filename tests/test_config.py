@@ -52,6 +52,8 @@ class ConfigTests(unittest.TestCase):
             ["--filter", "   "],
             ["--package", "A", "--test-mode",
              "--repository", "missing.json"],
+            ["--reverse", "bad/name"],
+            ["--reverse"],
         ]
 
         for arguments in cases:
