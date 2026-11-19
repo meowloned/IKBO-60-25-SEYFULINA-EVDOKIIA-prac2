@@ -32,7 +32,7 @@ def get_dependencies(repository, package, version):
         url += f"/{version}"
 
     url += "/json"
-    
+
     try:
         with urlopen(url, timeout=TIMEOUT) as response:
             data = json.load(response)

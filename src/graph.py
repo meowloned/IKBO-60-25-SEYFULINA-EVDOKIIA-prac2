@@ -87,7 +87,9 @@ def build_graph(args):
         repository = load_test_repository(args.repository)
 
         if root not in repository:
-            raise ValueError(f"Пакет {root} отсутствует в тестовом репозитории")
+            raise ValueError(
+                f"Пакет {root} отсутствует в тестовом репозитории"
+            )
 
     if args.filter and args.filter.lower() in root.lower():
         return {}

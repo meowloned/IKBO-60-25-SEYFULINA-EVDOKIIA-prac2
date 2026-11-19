@@ -42,7 +42,9 @@ def filter_string(value):
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description="Граф зависимостей Python-пакетов.")
+    parser = argparse.ArgumentParser(
+        description="Граф зависимостей Python-пакетов."
+    )
     parser.add_argument("--package", required=True, type=package_name)
     parser.add_argument("--version", required=True, type=version_string)
     parser.add_argument("--repository", default="https://pypi.org/pypi")
